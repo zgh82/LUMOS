@@ -238,16 +238,36 @@ module Multiplier_16bit
                     ({partial_product_3, 16'b0}); 
 endmodule
 
-module Multiplier
-(
-    input wire [7 : 0] operand_1,
-    input wire [7 : 0] operand_2,
 
-    output reg [15 : 0] product
+
+
+module Multiplier (
+    input wire [7:0] operand_1,  
+    input wire [7:0] operand_2,  
+    output reg [15:0] product     
 );
 
-    always @(*)
-    begin
-        product <= operand_1 * operand_2;
+    reg [15:0] multiplicand;     
+    reg [7:0] multiplier;        
+    reg [15:0] partial_product;  
+    integer i;                   
+
+    always @(*) begin
+        
+        multiplicand = {8'b0, operand_1}; 
+        multiplier = operand_2;          
+        partial_product = 16'b0;         
+
+        
+        for (i = 0; i < 8; i = i + 1) begin
+            if (multiplier[0] == 1'b1) begin
+                partial_product = partial_product + multiplicand; 
+            end
+            multiplicand = multiplicand << 1; 
+            multiplier = multiplier >> 1;     
+        end
+
+       
+        product = partial_product;
     end
 endmodule
